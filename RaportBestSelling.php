@@ -74,38 +74,26 @@ class RaportBestSelling extends Raport{
         $previosRaport->setParameters(['range' => $previosRange, 'indeks'=> $this->indeks]);
         $previosRaport = $previosRaport->generate()[0];
 
+        //wzrost o koknretny procent
         $calculatePercentageDifference = function($current, $previous) {
             return round((($current - $previous) / $previous) * 100, 2);
         };
         
-        $percentages = [
+        $raport= [
             'indeks' => $currentRaport['indeks'],
             'nazwa' => $currentRaport['nazwa'],
-            'stan_procent' => $calculatePercentageDifference($currentRaport['stan'], $previosRaport['stan']),
-            'cena_hp0' => $calculatePercentageDifference($currentRaport['cena_hp0'], $previosRaport['cena_hp0']),
+            'stan' => $currentRaport['stan'],
+            'cena_hp0' => $currentRaport['cena_hp0'],
+            'suma_ilosc_ten_okres' => $currentRaport['suma_ilosc'],
+            'suma_ilosc_poprzedni_okres' => $previosRaport['suma_ilosc'],
             'suma_ilosc_procent' => $calculatePercentageDifference($currentRaport['suma_ilosc'], $previosRaport['suma_ilosc']),
+            'suma_wartosc_ten_okres' => $currentRaport['suma_wartosc'],
+            'suma_wartosc_poprzedni_okres' => $previosRaport['suma_wartosc'],
             'suma_wartosc_procent' => $calculatePercentageDifference($currentRaport['suma_wartosc'], $previosRaport['suma_wartosc']),
+            'srednia_cena_sprzedazy_ten_okres' => $currentRaport['srednia_cena_sprzedazy'],
+            'srednia_cena_sprzedazy_poprzedni_okres' => $previosRaport['srednia_cena_sprzedazy'],
             'srednia_cena_sprzedazy_procent' => $calculatePercentageDifference($currentRaport['srednia_cena_sprzedazy'], $previosRaport['srednia_cena_sprzedazy']),
         ];
-
-        $raport = [
-            ['okres_domyslny' => $currentRaport],
-            ['okres_poprzedni' => $previosRaport],
-            ['raport' => $percentages],
-        ];
-       
-        if (!$showRaports) {
-            unset($raport['okres_domyslny']);
-            unset($raport['okres_poprzedni']);
-            
-            $raport = $percentages;
-        } else {
-            $raport = [
-                ['okres_domyslny' => $currentRaport],
-                ['okres_poprzedni' => $previosRaport],
-                ['raport' => $percentages],
-            ];
-        }
 
         return $raport;
     }
@@ -128,34 +116,21 @@ class RaportBestSelling extends Raport{
             return round((($current - $previous) / $previous) * 100, 2);
         };
         
-        $percentages = [
+        $raport= [
             'indeks' => $currentRaport['indeks'],
             'nazwa' => $currentRaport['nazwa'],
-            'stan_procent' => $calculatePercentageDifference($currentRaport['stan'], $previosRaport['stan']),
-            'cena_hp0' => $calculatePercentageDifference($currentRaport['cena_hp0'], $previosRaport['cena_hp0']),
+            'stan' => $currentRaport['stan'],
+            'cena_hp0' => $currentRaport['cena_hp0'],
+            'suma_ilosc_ten_okres' => $currentRaport['suma_ilosc'],
+            'suma_ilosc_poprzedni_okres' => $previosRaport['suma_ilosc'],
             'suma_ilosc_procent' => $calculatePercentageDifference($currentRaport['suma_ilosc'], $previosRaport['suma_ilosc']),
+            'suma_wartosc_ten_okres' => $currentRaport['suma_wartosc'],
+            'suma_wartosc_poprzedni_okres' => $previosRaport['suma_wartosc'],
             'suma_wartosc_procent' => $calculatePercentageDifference($currentRaport['suma_wartosc'], $previosRaport['suma_wartosc']),
+            'srednia_cena_sprzedazy_ten_okres' => $currentRaport['srednia_cena_sprzedazy'],
+            'srednia_cena_sprzedazy_poprzedni_okres' => $previosRaport['srednia_cena_sprzedazy'],
             'srednia_cena_sprzedazy_procent' => $calculatePercentageDifference($currentRaport['srednia_cena_sprzedazy'], $previosRaport['srednia_cena_sprzedazy']),
         ];
-
-        $raport = [
-            ['okres_domyslny' => $currentRaport],
-            ['okres_poprzedni' => $previosRaport],
-            ['raport' => $percentages],
-        ];
-       
-        if (!$showRaports) {
-            unset($raport['okres_domyslny']);
-            unset($raport['okres_poprzedni']);
-            
-            $raport = $percentages;
-        } else {
-            $raport = [
-                ['okres_domyslny' => $currentRaport],
-                ['okres_poprzedni' => $previosRaport],
-                ['raport' => $percentages],
-            ];
-        }
 
         return $raport;
     }

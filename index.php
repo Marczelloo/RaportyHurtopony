@@ -1,11 +1,23 @@
-<style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> System Raportow </title>
+    <style>
     table, th, tr, td{
         border: 1px solid black;
         border-collapse: collapse;
         padding: 0.25rem;
         text-align: center;
     }
-</style>
+    </style>
+</head>
+<body>
+</body>
+</html>
+
 <?php
 include('Raport.php');
 include("RaportBestSelling.php");
@@ -54,37 +66,37 @@ function wypiszRaport($raport){
     echo "</table>";
 }
 
-// $range = ["range"=>"last180days"];
+$range = ["range"=>"lastmonth"];
 
-// $raportBestSelling = new RaportBestSelling();
-// $raportBestSelling->setParameters($range);
+$raportBestSelling = new RaportBestSelling();
+$raportBestSelling->setParameters($range);
 
-// $raport = $raportBestSelling->generate();
+$raport = $raportBestSelling->generate();
 
-// echo "<table>";
-// echo "<tr>";
-//     echo "<th> INDEKS</th>";
-//     echo "<th> NAZWA </th>";
-//     echo "<th> STAN </th>";
-//     echo "<th> CENA_HP0 </th>";
-//     echo "<th> ILOSC </th>";
-//     echo "<th> WARTOSC </th>";
-//     echo "<th> SREDNIA CENA SPRZEDAZY </th>";
-// echo "</tr>";
-// foreach($raport as $row){
-//     echo "<tr>";
-//     echo "<td>".$row["indeks"]."</td>";
-//     echo "<td>".$row["nazwa"]."</td>";
-//     echo "<td>".$row["stan"]."</td>";
-//     echo "<td>".$row["cena_hp0"]."</td>";
-//     echo "<td>".$row["suma_ilosc"]."</td>";
-//     echo "<td>".$row["suma_wartosc"]."</td>";
-//     echo "<td>".$row["srednia_cena_sprzedazy"]."</td>";
-//     echo "</tr>";
-// }
-// echo "</table>";
+echo "<table>";
+echo "<tr>";
+    echo "<th> INDEKS</th>";
+    echo "<th> NAZWA </th>";
+    echo "<th> STAN </th>";
+    echo "<th> CENA_HP0 </th>";
+    echo "<th> ILOSC </th>";
+    echo "<th> WARTOSC </th>";
+    echo "<th> SREDNIA CENA SPRZEDAZY </th>";
+echo "</tr>";
+foreach($raport as $row){
+    echo "<tr>";
+    echo "<td>".$row["indeks"]."</td>";
+    echo "<td>".$row["nazwa"]."</td>";
+    echo "<td>".$row["stan"]."</td>";
+    echo "<td>".$row["cena_hp0"]."</td>";
+    echo "<td>".$row["suma_ilosc"]."</td>";
+    echo "<td>".$row["suma_wartosc"]."</td>";
+    echo "<td>".$row["srednia_cena_sprzedazy"]."</td>";
+    echo "</tr>";
+}
+echo "</table>";
 
-// $raportBestSelling->dbClose();
+$raportBestSelling->dbClose();
 
 // $raportNotSelling = new RaportNotSelling();
 // $raportNotSelling->setParameters($range);
@@ -110,18 +122,18 @@ function wypiszRaport($raport){
 
 //$raportNotSelling->dbClose();
 
-$params = ["range" => 'lastyear', "indeks"=>'98571'];
-$raportMonthlySelling = new RaportMonthlySelling();
-$raportMonthlySelling->setParameters($params);
-$raport =  $raportMonthlySelling->generate();
-wypiszRaport($raport);
+// $params = ["range" => 'lastyear', "indeks"=>'98571'];
+// $raportMonthlySelling = new RaportMonthlySelling();
+// $raportMonthlySelling->setParameters($params);
+// $raport =  $raportMonthlySelling->generate();
+// wypiszRaport($raport);
 
 
-$params = ["range" => 'last180days', "indeks"=>'110879'];
-$raportMonthlySelling = new RaportMonthlySelling();
-$raportMonthlySelling->setParameters($params);
-$raport =  $raportMonthlySelling->generate();
-wypiszRaport($raport);
+// $params = ["range" => 'last180days', "indeks"=>'110879'];
+// $raportMonthlySelling = new RaportMonthlySelling();
+// $raportMonthlySelling->setParameters($params);
+// $raport =  $raportMonthlySelling->generate();
+// wypiszRaport($raport);
 
 
 $dt = new DateConverter('thisyear');
@@ -145,7 +157,7 @@ $dt->wypiszData($wynik5);
 $wynik6 = $dt->getRangeYearAgo();
 $dt->wypiszData($wynik6);
 
-$params = ["range" => 'thisyear', 'indeks'=>'98571'];
+$params = ["range" => 'lastmonth', 'indeks'=>'64537'];
 $rbs = new RaportBestSelling();
 $rbs->setParameters($params);
 $wynik = $rbs->generate();
