@@ -22,6 +22,7 @@ class API{
         $this->dateTo = $_POST['dateTo'] ?? null;
         $this->indeks = $_POST['indeks'] ?? null;
     }
+    //sprawdzic format daty
 
     public function handle(){
         $this->request = $this->sanitizeInput($this->request);
@@ -34,10 +35,15 @@ class API{
             if($this->dateFrom == null){
                 $this->errors[] = "Nie podano zakresu daty od(dateFrom)!";
             } else {
-                if (false === strtotime($this->dateFrom)) {
+                if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $this->dateFrom)) {
                     $this->errors[] = "Niepoprawny format daty (dateFrom)!";
                 } else {
-                    $this->range = ['dateFrom' => $this->dateFrom];
+                    $dateCheck = DateTime::createFromFormat('Y-m-d', $this->dateFrom);
+                    if(($dateCheck && $dateCheck->format('Y-m-d') === $this->dateFrom)) {
+                        $this->range = ['dateFrom' => $this->dateFrom];
+                    } else {
+                        $this->errors[] = "Niepoprawna data (dateFrom)!";
+                    }
                 }
                 
             }
@@ -45,10 +51,17 @@ class API{
             if($this->dateTo == null){
                 $this->errors[] = "Nie podano zakresu daty do(dateTo)!";
             } else {
-                if (false === strtotime($this->dateTo)) {
-                    $this->errors[] = "Niepoprawny format daty (dateFrom)!";
+                if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $this->dateTo)) {
+                    $this->errors[] = "Niepoprawny format daty (dateTo)!";
                 } else {
-                    $this->range += ['dateTo' => $this->dateTo];
+                    $dateCheck = DateTime::createFromFormat('Y-m-d', $this->dateTo);
+                    if($dateCheck && $dateCheck->format('Y-m-d') === $this->dateTo) {
+                        if($this->range != null) {
+                            $this->range += ['dateTo' => $this->dateTo];
+                        }
+                    } else {
+                        $this->errors[] = "Niepoprawna data (dateTo)!";
+                    }
                 }
             }
 
@@ -78,7 +91,7 @@ class API{
         }
 
         if(!isset($this->request))
-            $this->errors[] = "Nie podano żadania(request)!";
+            $this->errors[] = "Nie podano zadania(request)!";
         else{
             if(is_string($this->request)){
                 switch($this->request){
@@ -104,8 +117,7 @@ class API{
                 $this->errors[] = "Nie poprawny format żądania(request)";
             }
         }  
-        
-        
+                
         if(empty($this->errors)){
             echo json_encode(['success'=> 1 , "result" => $this->result]);
         } else {
@@ -117,18 +129,14 @@ class API{
         $raport = new RaportBestSelling();
         if($this->indeks != null){ 
             if(isset($this->range)){
-                echo "1<br>";
                 $raport->setParameters(['range'=> $this->range, 'indeks'=> $this->indeks]);
             } else {
-                echo "2<br>";
                 $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo, 'indeks'=>$this->indeks]);
             }
         } else{ 
             if(isset($this->range)){
-                echo "3<br>";
                 $raport->setParameters(['range'=> $this->range]);
             } else {
-                echo "4<br>";
                 $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo]);
             }
         }
@@ -220,11 +228,13 @@ class API{
     }
 
     private function sanitizeInput($input) {
+        if($input === null)
+        return;
         $input = trim($input);
         $input = stripslashes($input);
         $input = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
         if (preg_match("/[\'=]/", $input)) {
-            $this->errors[] = "Input zawiera attak wstrzykujący SQL";
+            $this->errors[] = "Input zawiera atak wstrzykujący SQL";
         }
     
         return $input;

@@ -154,20 +154,20 @@ include("API.php");
 // $wynik6 = $dt->getRangeYearAgo();
 // $dt->wypiszData($wynik6);
 
-// $params = ["range" => 'last180days'];
-// $rbs = new RaportBestSelling();
-// $rbs->setParameters($params);
-// $wynik = $rbs->generate();
+$params = ["range" => 'last180days'];
+$rbs = new RaportBestSelling();
+$rbs->setParameters($params);
 
-// $porownanie = $rbs->allCompareRange();
+$porownanie = $rbs->countTime();
+$porownanie = $rbs->newCompareRange();
 
-// print_r($porownanie);
-// foreach($porownanie as $p){
-//     foreach($p as $key => $value){
-//         echo $key." : ".$value."<br>";
-//     }
-// }
-// echo "<br><br>";
+print_r($porownanie);
+foreach($porownanie as $p){
+    foreach($p as $key => $value){
+        echo $key." : ".$value."<br>";
+    }
+}
+echo "<br><br>";
 
 // $porownanie = $rbs->compareYearAgo();
 
@@ -176,10 +176,11 @@ include("API.php");
 //     echo $key." : ".$value."<br>";
 // }
 
-// Sanitize the input parameters
-$_POST['request'] = 'bestselling';
-$_POST['range'] = 'last90days';
 
-$api = new API();
-echo $api->handle();
+// Sanitize the input parameters
+// $_POST['request'] = 'bestselling';
+// $_POST['range'] = 'last90days';
+
+// $api = new API();
+// echo $api->handle();
 ?>
