@@ -4,6 +4,7 @@ include('Raport.php');
 include("RaportBestSelling.php");
 include("RaportNotSelling.php");
 include("RaportMonthlySelling.php");
+include("Authorization.php");
 
 class API{
     private $request; // 'bestselling' || 'bestsellingRangeAgo' || 'bestsellingYearAgo' || 'notselling' || 'monthlyselling'
@@ -12,15 +13,25 @@ class API{
     private $dateFrom; //zakres dat od i do jest liczony w przeszlosc czyli od = 12.05.2023, do = 01.01.2023
     private $dateTo; 
     private $indeks;
+
+    private $login;
+    private $haslo;
+    
+    private $token;
+
     private $errors = [];
     private $result = [];
 
-    public function __construct(){
+    public function __construct(){    
         $this->request = $_POST['request'] ?? null;
         $this->range = $_POST['range'] ?? null;
         $this->dateFrom = $_POST['dateFrom'] ?? null;
         $this->dateTo = $_POST['dateTo'] ?? null;
         $this->indeks = $_POST['indeks'] ?? null;
+        $this->token = $_POST['token'] ?? null;
+        $this->login = $_POST['login'] ?? null;
+        $this->haslo = $_POST['haslo'] ?? null;
+        //token
     }
     //sprawdzic format daty
 
@@ -31,6 +42,7 @@ class API{
         $this->dateTo = $this->sanitizeInput($this->dateTo);
         $this->indeks = $this->sanitizeInput($this->indeks);
 
+        //get token dla request 'getToken'
         if(!isset($this->range)){
             if($this->dateFrom == null){
                 $this->errors[] = "Nie podano zakresu daty od(dateFrom)!";
@@ -92,27 +104,37 @@ class API{
 
         if(!isset($this->request))
             $this->errors[] = "Nie podano zadania(request)!";
-        else{
+        else {
             if(is_string($this->request)){
-                switch($this->request){
-                    case 'bestselling':
-                        $this->bestselling();
-                    break;
-                    case 'bestsellingRangeAgo':
-                        $this->bestsellingRangeAgo();
-                    break;
-                    case 'bestsellingYearAgo':
-                        $this->bestSellingRangeYearAgo();
-                    break;
-                    case 'notselling':
-                        $this->notselling();
-                    break;
-                    case 'monthlyselling':
-                        $this->monthlyselling();
-                    break;
-                    default:
-                    $this->errors[] = "Niepoprawne żądanie(request)!";
-                }
+                //dodanie sprawdzenie czy token poprawny
+                    $auth_token = new Authorization($this->token);
+                    switch($this->request){
+                        case 'getToken' : 
+                            $auth = new Authorization(null, $this->login, $this->haslo);
+                            $auth->login();
+                            $this->result = $auth->authorize();
+                        case 'bestselling':
+                            if($auth_token->authorize()){
+                                $this->bestselling(); 
+                            } else {
+                                $this->errors[] = $auth_token->authorize();
+                            }
+                        break;
+                        case 'bestsellingRangeAgo':
+                            $this->bestsellingRangeAgo();
+                        break;
+                        case 'bestsellingYearAgo':
+                            $this->bestSellingRangeYearAgo();
+                        break;
+                        case 'notselling':
+                            $this->notselling(); 
+                        break;
+                        case 'monthlyselling':
+                            $this->monthlyselling();
+                        break;
+                        default:
+                        $this->errors[] = "Niepoprawne żądanie(request)!";
+                    }
             } else {
                 $this->errors[] = "Nie poprawny format żądania(request)";
             }
