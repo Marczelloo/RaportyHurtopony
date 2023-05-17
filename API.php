@@ -1,4 +1,5 @@
 <?php
+ini_set('display_errors', 0);
 
 include('Raport.php');
 include("RaportBestSelling.php");
@@ -31,9 +32,7 @@ class API{
         $this->token = $_POST['token'] ?? null;
         $this->login = $_POST['login'] ?? null;
         $this->haslo = $_POST['haslo'] ?? null;
-        //token
     }
-    //sprawdzic format daty
 
     public function handle(){
         $this->request = $this->sanitizeInput($this->request);
@@ -41,9 +40,11 @@ class API{
         $this->dateFrom = $this->sanitizeInput($this->dateFrom);
         $this->dateTo = $this->sanitizeInput($this->dateTo);
         $this->indeks = $this->sanitizeInput($this->indeks);
-
-        //get token dla request 'getToken'
-        if(!isset($this->range)){
+        $this->login = $this->sanitizeInput($this->login);
+        $this->haslo = $this->sanitizeInput($this->haslo);
+        
+        if(!isset($this->login) && !isset($this->haslo)){
+        if(!isset($this->range) || $this->range == null || $this->range == ""){
             if($this->dateFrom == null){
                 $this->errors[] = "Nie podano zakresu daty od(dateFrom)!";
             } else {
@@ -101,44 +102,67 @@ class API{
                 $this->errors[] = "Niepoprawny format indeksu! Indeks moze zawierac tylko cyfry.";
             }  
         }
+        } else {
+            if($this->login == null || $this->login == ""){
+                $this->errors[] = "Nie poprawny format login lub nie podano";
+            }
+
+            if($this->haslo == null || $this->haslo == ""){
+                $this->errors[] = "Nie poprawny format haslo lub nie podano";
+            }
+        }
 
         if(!isset($this->request))
             $this->errors[] = "Nie podano zadania(request)!";
         else {
             if(is_string($this->request)){
-                //dodanie sprawdzenie czy token poprawny
-                    $auth_token = new Authorization($this->token);
-                    switch($this->request){
-                        case 'getToken' : 
-                            $auth = new Authorization(null, $this->login, $this->haslo);
-                            $auth->login();
-                            $this->result = $auth->authorize();
-                        case 'bestselling':
-                            if($auth_token->authorize()){
-                                $this->bestselling(); 
+                    if($this->token != null){
+                        $auth_token = new Authorization($this->token);
+                        $valid = $auth_token->checkToken();
+                        if(is_array($valid)){
+                            if(array_key_exists('token', $valid) && array_key_exists('refreshToken', $valid)){
+                                $this->result = $valid;
                             } else {
-                                $this->errors[] = $auth_token->authorize();
+                                $this->errors = $valid;
                             }
-                        break;
-                        case 'bestsellingRangeAgo':
-                            $this->bestsellingRangeAgo();
-                        break;
-                        case 'bestsellingYearAgo':
-                            $this->bestSellingRangeYearAgo();
-                        break;
-                        case 'notselling':
-                            $this->notselling(); 
-                        break;
-                        case 'monthlyselling':
-                            $this->monthlyselling();
-                        break;
-                        default:
-                        $this->errors[] = "Niepoprawne żądanie(request)!";
+                        } 
+                    }
+                    if($valid === true || ($this->login != null && $this->haslo != null)){
+                        switch($this->request){
+                            case 'getToken' : 
+                                $auth = new Authorization(null, $this->login, $this->haslo);
+                                $auth->login();
+                                $validLogin = $auth->checkLogin();
+                                if(array_key_exists('token', $validLogin) && array_key_exists('refreshToken', $validLogin)){
+                                    $this->result = $auth->getTokens();
+                                } else {
+                                    $this->errors = $validLogin;
+
+                                }
+                            break;
+                            case 'bestselling':
+                                $this->bestselling();
+                            break;
+                            case 'bestsellingRangeAgo':
+                                $this->bestsellingRangeAgo();
+                            break;
+                            case 'bestsellingYearAgo':
+                                $this->bestSellingRangeYearAgo();
+                            break;
+                            case 'notselling':
+                                $this->notselling(); 
+                            break;
+                            case 'monthlyselling':
+                                $this->monthlyselling();
+                            break;
+                            default:
+                            $this->errors[] = "Niepoprawne żądanie(request)!";
+                        }
                     }
             } else {
                 $this->errors[] = "Nie poprawny format żądania(request)";
             }
-        }  
+        }
                 
         if(empty($this->errors)){
             echo json_encode(['success'=> 1 , "result" => $this->result]);
@@ -171,18 +195,18 @@ class API{
         if(isset($this->indeks)){ 
             if(isset($this->range)){
                 $raport->setParameters(['range'=> $this->range, 'indeks'=> $this->indeks]);
-                $this->result = $raport->compareRange();
+                $this->result = $raport->newCompareRange();
             } else {
                 $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo, 'indeks'=>$this->indeks]);
-                $this->result = $raport->compareRange();
+                $this->result = $raport->newCompareRange();
             }
         } else{ 
             if(isset($this->range)){
                 $raport->setParameters(['range'=> $this->range]);
-                $this->result = $raport->allCompareRange();
+                $this->result = $raport->newCompareRange();
             } else {
                 $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo]);
-                $this->result = $raport->allCompareRange();
+                $this->result = $raport->newCompareRange();
             }
         }
         
@@ -194,18 +218,18 @@ class API{
         if(isset($this->indeks)){ 
             if(isset($this->range)){
                 $raport->setParameters(['range'=> $this->range, 'indeks'=> $this->indeks]);
-                $this->result = $raport->compareYearAgo();
+                $this->result = $raport->newCopareRangeYearAgo();
             } else {
                 $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo, 'indeks'=>$this->indeks]);
-                $this->result = $raport->compareYearAgo(); //
+                $this->result = $raport->newCopareRangeYearAgo();
             }
         } else{ 
             if(isset($this->range)){
                 $raport->setParameters(['range'=> $this->range]);
-                $this->result = $raport->allCompareYearAgo();
+                $this->result = $raport->newCopareRangeYearAgo();
             } else {
                 $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo]);
-                $this->result = $raport->allCompareYearAgo();
+                $this->result = $raport->newCopareRangeYearAgo();
             }
         }
         $raport->dbClose();

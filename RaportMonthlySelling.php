@@ -52,8 +52,6 @@ class RaportMonthlySelling extends Raport{
             $date->modify('+1 month');
             $current_timestamp = $date->format('Y-m-d');
         }
-
-        $this->dbClose();
         
         return $raport;
     }

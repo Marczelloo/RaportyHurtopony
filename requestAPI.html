@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="PL-pl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Raport </title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="script.js" type="text/javascript"></script>
+</head>
+<body>
+
+<section class="container">
+  <div class="login-container" id="login-container">
+    <h1> Zaloguj sie  </h1>
+    <form>
+      <label htmlFor="login"> Login </label>
+      <input type="text" id="login" placeholder="Login">
+      <label htmlFor="password"> Haslo </label>
+      <input type="password" id="haslo" placeholder="Hasło">
+      <button id="loginBtn"> Zaloguj </button>
+    </form>
+  </div>
+  <div class="raport-container" id="raport-container">
+    <h1> Raport </h1>
+    <form>
+    <label htmlFor="request"> Request </label>
+        <select id="request">
+            <option value="bestselling">Raport for best selling products</option>
+            <option value="bestsellingRangeAgo">Raport for best selling products for Range Ago</option>
+            <option value="bestsellingYearAgo">Raport for best selling prodcuts for Year Ago</option>
+            <option value="notselling">Raporst not selling</option>
+            <option value="monthlyselling">Raporst sellings in months</option>
+        </select>
+        <label htmlFor="range"> Range </label>
+        <select id="range">
+            <option value="range"> Range </option>
+            <option value="yesterday"> Yesterday </option>
+            <option value="last7days"> Last 7 days </option>
+            <option value="last14days"> Last 14 days </option>
+            <option value="last30days"> Last 30 days </option>
+            <option value="last90days"> Last 90 days </option>
+            <option value="last180days"> Last 180 days </option>
+            <option value="lastmonth"> Last month </option>
+            <option value="thismonth"> This month </option>
+            <option value="lastyear"> Last year </option>
+            <option value="thisyear"> This year </option>
+        </select>
+        <label htmlFor="dateFrom"> Date From </label>
+        <input type="text" id="dateFrom" pattern="\d{4}-\d{2}-\d{2}" placeholder="YYYY-MM-DD">
+        <label htmlFor="dateTo"> Date To </label>
+        <input type="text" id="dateTo" pattern="\d{4}-\d{2}-\d{2}" placeholder="YYYY-MM-DD"> 
+        <label htmlFor="indeks"> Indeks </label>
+        <input type="text" id="indeks"> 
+        <label htmlFor="token"> Token </label>
+        <input type="text" id="token">
+        <button id="btn"> Wyswietl </button>
+        <button id="relogin"> Zaloguj sie </button>
+    </form>
+  </div>
+  
+  <div class="output-container">
+    <h1> output </h1>
+    <div id="output">
+
+    </div>
+  </div>
+  
+</section>
+</body>
+</html>

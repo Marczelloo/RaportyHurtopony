@@ -306,165 +306,165 @@ class RaportBestSelling extends Raport{
         return $raport;
     }
 
-    public function compareRange($index = null, $currentRaport){
-        //arg: raports = fale : wypisuje tylko tablice z procentami z porownanych okresow
-        //raports = true : wypisuje raport z pierwszego okresu oraz drugiego i procenty
+    // public function compareRange($index = null, $currentRaport){
+    //     //arg: raports = fale : wypisuje tylko tablice z procentami z porownanych okresow
+    //     //raports = true : wypisuje raport z pierwszego okresu oraz drugiego i procenty
 
-        //wzrost o koknretny procent
-        $calculatePercentageDifference = function($current, $previous) {
-            if($current == 0 && $previous == 0){
-                return 0;
-            } else if($previous == 0 && $current != 0){
-                return round($current * 100, 2);
-            } else {
-                return round((($current - $previous) / $previous) * 100, 2);
-            }
-        };
+    //     //wzrost o koknretny procent
+    //     $calculatePercentageDifference = function($current, $previous) {
+    //         if($current == 0 && $previous == 0){
+    //             return 0;
+    //         } else if($previous == 0 && $current != 0){
+    //             return round($current * 100, 2);
+    //         } else {
+    //             return round((($current - $previous) / $previous) * 100, 2);
+    //         }
+    //     };
         
-        if($this->range){
-            $currentRange = $this->range;
-            $previousRange = (new DateConverter($this->range))->getRangeBefore();
-        } else {
-            $currentRange = $this->range;
-            $previousRange = (new DateConverter(["dateFrom" => $this->dateFrom, "dateTo" => $this->dateTo]));
-        }
+    //     if($this->range){
+    //         $currentRange = $this->range;
+    //         $previousRange = (new DateConverter($this->range))->getRangeBefore();
+    //     } else {
+    //         $currentRange = $this->range;
+    //         $previousRange = (new DateConverter(["dateFrom" => $this->dateFrom, "dateTo" => $this->dateTo]));
+    //     }
         
-        $previousRaport = new RaportBestSelling();
+    //     $previousRaport = new RaportBestSelling();
 
-        if($index){
-            $currentRaport->setParameters(['range' => $currentRange, 'indeks' => $index]);
-            $currentRaport = $currentRaport->generate()[0];
+    //     if($index){
+    //         $currentRaport->setParameters(['range' => $currentRange, 'indeks' => $index]);
+    //         $currentRaport = $currentRaport->generate()[0];
     
-            $previousRaport->setParameters(['range' => $previousRange, 'indeks' => $index]);
-            if(empty($previousRaport = $previousRaport->generate())){ //
-                $previousRaport = null;
-            } else {
-                $previousRaport = $previousRaport[0];
-            };
-        } else {
-            $currentRaport->setParameters(['range' => $currentRange, 'indesk' => $this->indeks]);
-            $currentRaport = $currentRaport->generate()[0];
+    //         $previousRaport->setParameters(['range' => $previousRange, 'indeks' => $index]);
+    //         if(empty($previousRaport = $previousRaport->generate())){ //
+    //             $previousRaport = null;
+    //         } else {
+    //             $previousRaport = $previousRaport[0];
+    //         };
+    //     } else {
+    //         $currentRaport->setParameters(['range' => $currentRange, 'indesk' => $this->indeks]);
+    //         $currentRaport = $currentRaport->generate()[0];
     
-            $previousRaport->setParameters(['range' => $previousRange, 'indeks' => $this->indeks]);
-            $previousRaport = $previousRaport->generate()[0];
-        }
+    //         $previousRaport->setParameters(['range' => $previousRange, 'indeks' => $this->indeks]);
+    //         $previousRaport = $previousRaport->generate()[0];
+    //     }
         
 
-            $raport= [
-                'indeks' => $currentRaport['indeks'],
-                'nazwa' => $currentRaport['nazwa'],
-                'stan' => $currentRaport['stan'],
-                'cena_hp0' => $currentRaport['cena_hp0'],
-                'suma_ilosc_ten_okres' => $currentRaport['suma_ilosc'],
-                'suma_ilosc_poprzedni_okres' => $previousRaport == null ? 'brak_sprzedazy' : $previousRaport['suma_ilosc'],
-                'suma_ilosc_procent' => $calculatePercentageDifference($currentRaport['suma_ilosc'], $previousRaport == null ? 0 : $previousRaport['suma_ilosc']),
-                'suma_wartosc_ten_okres' => $currentRaport['suma_wartosc'],
-                'suma_wartosc_poprzedni_okres' => $previousRaport == null ? 'brak_sprzedazy' : $previousRaport['suma_wartosc'],
-                'suma_wartosc_procent' => $calculatePercentageDifference($currentRaport['suma_wartosc'], $previousRaport == null ? 0 : $previousRaport['suma_wartosc']),
-                'srednia_cena_sprzedazy_ten_okres' => $currentRaport['srednia_cena_sprzedazy'],
-                'srednia_cena_sprzedazy_poprzedni_okres' => $previousRaport == null ?  'brak_sprzedazy' : $previousRaport['srednia_cena_sprzedazy'] ,
-                'srednia_cena_sprzedazy_procent' => $calculatePercentageDifference($currentRaport['srednia_cena_sprzedazy'], $previousRaport == null ? 0 : $previousRaport['srednia_cena_sprzedazy'] ),
-            ];
-        return $raport;
-    }
+    //         $raport= [
+    //             'indeks' => $currentRaport['indeks'],
+    //             'nazwa' => $currentRaport['nazwa'],
+    //             'stan' => $currentRaport['stan'],
+    //             'cena_hp0' => $currentRaport['cena_hp0'],
+    //             'suma_ilosc_ten_okres' => $currentRaport['suma_ilosc'],
+    //             'suma_ilosc_poprzedni_okres' => $previousRaport == null ? 'brak_sprzedazy' : $previousRaport['suma_ilosc'],
+    //             'suma_ilosc_procent' => $calculatePercentageDifference($currentRaport['suma_ilosc'], $previousRaport == null ? 0 : $previousRaport['suma_ilosc']),
+    //             'suma_wartosc_ten_okres' => $currentRaport['suma_wartosc'],
+    //             'suma_wartosc_poprzedni_okres' => $previousRaport == null ? 'brak_sprzedazy' : $previousRaport['suma_wartosc'],
+    //             'suma_wartosc_procent' => $calculatePercentageDifference($currentRaport['suma_wartosc'], $previousRaport == null ? 0 : $previousRaport['suma_wartosc']),
+    //             'srednia_cena_sprzedazy_ten_okres' => $currentRaport['srednia_cena_sprzedazy'],
+    //             'srednia_cena_sprzedazy_poprzedni_okres' => $previousRaport == null ?  'brak_sprzedazy' : $previousRaport['srednia_cena_sprzedazy'] ,
+    //             'srednia_cena_sprzedazy_procent' => $calculatePercentageDifference($currentRaport['srednia_cena_sprzedazy'], $previousRaport == null ? 0 : $previousRaport['srednia_cena_sprzedazy'] ),
+    //         ];
+    //     return $raport;
+    // }
 
-    public function allCompareRange(){
-        $rbs = new RaportBestSelling();
-        $rbs->setParameters(['range' => $this->range]);
-        $raports = $rbs->generate();
-        echo "raports: ";
+    // public function allCompareRange(){
+    //     $rbs = new RaportBestSelling();
+    //     $rbs->setParameters(['range' => $this->range]);
+    //     $raports = $rbs->generate();
+    //     echo "raports: ";
 
-        $indexes = [];
-        foreach($raports as $r){
-            $indexes[] = $r['indeks'];
-        }
+    //     $indexes = [];
+    //     foreach($raports as $r){
+    //         $indexes[] = $r['indeks'];
+    //     }
 
-        $compareRaports = [];
-        foreach($indexes as $i){
-            $compareRaports[] = $this->compareRange($i, $rbs);
-        }
+    //     $compareRaports = [];
+    //     foreach($indexes as $i){
+    //         $compareRaports[] = $this->compareRange($i, $rbs);
+    //     }
 
-        //return $compareRaports;
-    }
+    //     //return $compareRaports;
+    // }
 
-    public function allCompareYearAgo(){
-        $rbs = new RaportBestSelling();
-        $rbs->setParameters(['range' => $this->range]);
-        $raports = $rbs->generate();
-        echo "raports: ";
+    // public function allCompareYearAgo(){
+    //     $rbs = new RaportBestSelling();
+    //     $rbs->setParameters(['range' => $this->range]);
+    //     $raports = $rbs->generate();
+    //     echo "raports: ";
 
-        $indexes = [];
-        foreach($raports as $r){
-            $indexes[] = $r['indeks'];
-        }
+    //     $indexes = [];
+    //     foreach($raports as $r){
+    //         $indexes[] = $r['indeks'];
+    //     }
 
-        $compareRaports = [];
-        foreach($indexes as $i){
-            $compareRaports[] = $this->compareYearAgo($i, $rbs);
-        }
+    //     $compareRaports = [];
+    //     foreach($indexes as $i){
+    //         $compareRaports[] = $this->compareYearAgo($i, $rbs);
+    //     }
 
-        return $compareRaports;
-    }
+    //     return $compareRaports;
+    // }
 
-    public function compareYearAgo($index = null, $currentRaport){
-        //arg: raports = fale : wypisuje tylko tablice z procentami z porownanych okresow
-        //raports = true : wypisuje raport z pierwszego okresu oraz drugiego i procenty
-        $calculatePercentageDifference = function($current, $previous) {
-            if($current == 0 && $previous == 0){
-                return 0;
-            } else if($previous == 0 && $current != 0){
-                return round($current * 100, 2);
-            } else {
-                return round((($current - $previous) / $previous) * 100, 2);
-            }
-        };
+//     public function compareYearAgo($index = null, $currentRaport){
+//         //arg: raports = fale : wypisuje tylko tablice z procentami z porownanych okresow
+//         //raports = true : wypisuje raport z pierwszego okresu oraz drugiego i procenty
+//         $calculatePercentageDifference = function($current, $previous) {
+//             if($current == 0 && $previous == 0){
+//                 return 0;
+//             } else if($previous == 0 && $current != 0){
+//                 return round($current * 100, 2);
+//             } else {
+//                 return round((($current - $previous) / $previous) * 100, 2);
+//             }
+//         };
         
-        if($this->range){
-            $currentRange = $this->range;
-            $previousRange = (new DateConverter($this->range))->getRangeYearAgo();
-        } else {
-            $currentRange = $this->range;
-            $previousRange = (new DateConverter(["dateFrom" => $this->dateFrom, "dateTo" => $this->dateTo]));
-        }
+//         if($this->range){
+//             $currentRange = $this->range;
+//             $previousRange = (new DateConverter($this->range))->getRangeYearAgo();
+//         } else {
+//             $currentRange = $this->range;
+//             $previousRange = (new DateConverter(["dateFrom" => $this->dateFrom, "dateTo" => $this->dateTo]));
+//         }
         
-        $previousRaport = new RaportBestSelling();
+//         $previousRaport = new RaportBestSelling();
 
-        if($index){
-            $currentRaport->setParameters(['range' => $currentRange, 'indeks' => $index]);
-            $currentRaport = $currentRaport->generate()[0];
+//         if($index){
+//             $currentRaport->setParameters(['range' => $currentRange, 'indeks' => $index]);
+//             $currentRaport = $currentRaport->generate()[0];
     
-            $previousRaport->setParameters(['range' => $previousRange, 'indeks' => $index]);
-            if(empty($previousRaport = $previousRaport->generate())){ //
-                $previousRaport = null;
-            } else {
-                $previousRaport = $previousRaport[0];
-            };
-        } else {
-            $currentRaport->setParameters(['range' => $currentRange, 'indesk' => $this->indeks]);
-            $currentRaport = $currentRaport->generate()[0];
+//             $previousRaport->setParameters(['range' => $previousRange, 'indeks' => $index]);
+//             if(empty($previousRaport = $previousRaport->generate())){ //
+//                 $previousRaport = null;
+//             } else {
+//                 $previousRaport = $previousRaport[0];
+//             };
+//         } else {
+//             $currentRaport->setParameters(['range' => $currentRange, 'indesk' => $this->indeks]);
+//             $currentRaport = $currentRaport->generate()[0];
     
-            $previousRaport->setParameters(['range' => $previousRange, 'indeks' => $this->indeks]);
-            $previousRaport = $previousRaport->generate()[0];
-        }
+//             $previousRaport->setParameters(['range' => $previousRange, 'indeks' => $this->indeks]);
+//             $previousRaport = $previousRaport->generate()[0];
+//         }
         
 
-            $raport= [
-                'indeks' => $currentRaport['indeks'],
-                'nazwa' => $currentRaport['nazwa'],
-                'stan' => $currentRaport['stan'],
-                'cena_hp0' => $currentRaport['cena_hp0'],
-                'suma_ilosc_ten_okres' => $currentRaport['suma_ilosc'],
-                'suma_ilosc_poprzedni_okres' => $previousRaport == null ? 'brak_sprzedazy' : $previousRaport['suma_ilosc'],
-                'suma_ilosc_procent' => $calculatePercentageDifference($currentRaport['suma_ilosc'], $previousRaport == null ? 0 : $previousRaport['suma_ilosc']),
-                'suma_wartosc_ten_okres' => $currentRaport['suma_wartosc'],
-                'suma_wartosc_poprzedni_okres' => $previousRaport == null ? 'brak_sprzedazy' : $previousRaport['suma_wartosc'],
-                'suma_wartosc_procent' => $calculatePercentageDifference($currentRaport['suma_wartosc'], $previousRaport == null ? 0 : $previousRaport['suma_wartosc']),
-                'srednia_cena_sprzedazy_ten_okres' => $currentRaport['srednia_cena_sprzedazy'],
-                'srednia_cena_sprzedazy_poprzedni_okres' => $previousRaport == null ?  'brak_sprzedazy' : $previousRaport['srednia_cena_sprzedazy'] ,
-                'srednia_cena_sprzedazy_procent' => $calculatePercentageDifference($currentRaport['srednia_cena_sprzedazy'], $previousRaport == null ? 0 : $previousRaport['srednia_cena_sprzedazy'] ),
-            ];
-        return $raport;
-    }
+//             $raport= [
+//                 'indeks' => $currentRaport['indeks'],
+//                 'nazwa' => $currentRaport['nazwa'],
+//                 'stan' => $currentRaport['stan'],
+//                 'cena_hp0' => $currentRaport['cena_hp0'],
+//                 'suma_ilosc_ten_okres' => $currentRaport['suma_ilosc'],
+//                 'suma_ilosc_poprzedni_okres' => $previousRaport == null ? 'brak_sprzedazy' : $previousRaport['suma_ilosc'],
+//                 'suma_ilosc_procent' => $calculatePercentageDifference($currentRaport['suma_ilosc'], $previousRaport == null ? 0 : $previousRaport['suma_ilosc']),
+//                 'suma_wartosc_ten_okres' => $currentRaport['suma_wartosc'],
+//                 'suma_wartosc_poprzedni_okres' => $previousRaport == null ? 'brak_sprzedazy' : $previousRaport['suma_wartosc'],
+//                 'suma_wartosc_procent' => $calculatePercentageDifference($currentRaport['suma_wartosc'], $previousRaport == null ? 0 : $previousRaport['suma_wartosc']),
+//                 'srednia_cena_sprzedazy_ten_okres' => $currentRaport['srednia_cena_sprzedazy'],
+//                 'srednia_cena_sprzedazy_poprzedni_okres' => $previousRaport == null ?  'brak_sprzedazy' : $previousRaport['srednia_cena_sprzedazy'] ,
+//                 'srednia_cena_sprzedazy_procent' => $calculatePercentageDifference($currentRaport['srednia_cena_sprzedazy'], $previousRaport == null ? 0 : $previousRaport['srednia_cena_sprzedazy'] ),
+//             ];
+//         return $raport;
+//     }
 }
 
 ?>

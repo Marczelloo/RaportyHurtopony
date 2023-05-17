@@ -40,10 +40,7 @@ class RaportNotSelling extends Raport{
             $prepare2->close();
             $prepare->close();
         }
-
-        $this->dbClose();
-        
-
+    
         return $raport;
     }
 }

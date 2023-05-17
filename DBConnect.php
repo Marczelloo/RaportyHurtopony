@@ -16,7 +16,7 @@ class DBConnect{
         if($this->mysqli->connect_error){
             die("Błąd połączenia: ". $this->mysqli->connect_error);
         } else {
-            echo "Połączoną z bazą <br>";
+            
         }
         $this->mysqli->query("SET NAMES 'utf8' COLLATE 'utf8_polish_ci'");
     }
