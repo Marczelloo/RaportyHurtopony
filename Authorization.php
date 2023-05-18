@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Class Authorization
- * Handles user authorization and token generation.
+ * Klasa Authorization
+ * Zarządza autoryzacją użytkownika i generowaniem tokenów.
  */
 class Authorization{
     protected $dbConnection;
@@ -18,34 +18,36 @@ class Authorization{
     private $refreshed = false;
 
     /**
-     * Authorization constructor.
+     * Konstruktor Authorization.
      *
-     * @param string|null $token  Token for authorization
-     * @param string|null $login  User login
-     * @param string|null $haslo  User password
+     * @param string|null $token  Token autoryzacji
+     * @param string|null $login  Login użytkownika
+     * @param string|null $haslo  Hasło użytkownika
      */
     public function __construct($token = null, $login = null, $haslo = null){
         $this->dbConnection = new DBConnect();
         
         if($token != null){
-            // If token is provided, decode it and extract login and token parts
+            // Jeśli podano token, zdekoduj go i wyodrębnij login i token
             $token = base64_decode($token);
             $parts = explode('.', $token);
             $this->login = $parts[0];
             $this->token = $parts[1];
         }else if ($login != null && $haslo != null){
-            // If login and password are provided, store them
+            // Jeśli podano login i hasło, zapisz je
             $this->login = $login;
             $this->haslo = md5($haslo);
         } else {
-            $this->errors[] = "Nie zalogowano sie ani nie podano tokenu!";
+            $this->errors[] = "Nie zalogowano się ani nie podano tokenu!";
         }
     }
 
     /**
-     * Authorize the user by validating the token and generating new tokens if necessary.
+     * Autoryzuje użytkownika przez sprawdzenie tokena, jeżeli walidacja przeszłą pomyślnie oraz tokeny nie zostały odświeżoneto zwraca wartość true jako zwerfyikowano token
+     * W przypadku kiedy użytkownik musiał podać refresh token i zostały wygenerowane nowe tokeny to zwraca tablicę z tymi tokenami
+     * W kazdym innym przypadku zwraca tablicę z błedami
      *
-     * @return bool|array|string  Returns true if authorized, an array of tokens if refreshed, or an error message.
+     * @return bool|array|string  Zwraca true, jeśli autoryzacja jest poprawna, tablicę tokenów, jeśli zostały odświeżone, lub komunikat o błędzie.
      */
     public function checkToken(){
         $this->validateToken();
@@ -64,12 +66,13 @@ class Authorization{
     }
     
     /** 
-     *  Checks if user validation gone well and return the tokens if theres no errors and return errors if there are anu
+     * Sprawdza poprawność logowania użytkownika i zwraca tokeny jeśli nie ma błędów, jak jakieś występuja to zwraca tablice z błedami.
      * 
-     * @return array Returns array of errors or tokens
+     * @return array  Zwraca tablicę błędów lub tokenów.
     */
     public function checkLogin()
     { 
+        $this->login();
         if(empty($this->errors)){
             return $this->getTokens();
         } else {
@@ -78,9 +81,9 @@ class Authorization{
     }
 
     /**
-     * Get the tokens as an array.
+     * Zwraca tokeny jako tablice
      *
-     * @return array|null  Returns an array with 'token' and 'refreshToken' keys if tokens exist, otherwise null.
+     * @return array|null  Zwraca tablicę z kluczami 'token' i 'refreshToken', jeśli istnieją tokeny, w przeciwnym razie null.
      */
     public function getTokens(){
         if($this->token != null && $this->refreshToken != null)
@@ -88,7 +91,8 @@ class Authorization{
     }
 
     /**
-     * Perform user login by checking the provided login and password against the database.
+     * Wykonuje logowanie użytkownika poprzez sprawdzenie podanego loginu i hasła w bazie danych.
+     * Po udanym logowaniu generuje tokeny
      */
     public function login(){
         $query = "select haslo from authorization where login = ?";
@@ -98,22 +102,22 @@ class Authorization{
         $result = $prepare->get_result();
 
         if($result == null || $result->num_rows == 0){
-            $this->errors[] = "Nie ma takiego uzytkownika w bazie";
+            $this->errors[] = "Nie ma takiego użytkownika w bazie";
         } else {
             $pass = $result->fetch_assoc()['haslo'];
 
             if($pass === $this->haslo){
                 $this->generateTokens();
             } else { 
-                $this->errors[] = "Bledne dane logowanie lub nie istnieje taki użytkownik";
+                $this->errors[] = "Błędne dane logowania lub nie istnieje taki użytkownik";
             }
         }
     }
     
 
     /**
-     * Validate the provided token by checking against the database.
-     * Generate new tokens if necessary and update the token-related properties.
+     * Sprawdza poprawność podanego tokena przez porównanie z bazą danych.
+     * Sprawdza ważność tokena oraz refresh tokena, w przypadku wygaśniecia zwykłego tokena generuje nowy token i refresh token.
      */
     private function validateToken(){
         $query = "select token, refreshToken, tokenLifeTime, refreshLifeTime from authorization where login = ?";
@@ -124,7 +128,7 @@ class Authorization{
         
         if($this->token !== $result['token']){
             if($this->token !== $result['refreshToken']){
-                $this->errors[] = 'Nie poprawny token';
+                $this->errors[] = 'Nieprawidłowy token';
                 return;
             }
         }
@@ -134,7 +138,7 @@ class Authorization{
 
         if($this->token === $result['token']){
             if($lifeTime < $date){
-                $this->errors[] = 'Token wygasl, podaj refresh token';
+                $this->errors[] = 'Token wygasł, podaj token odświeżający';
             }
             return;
         } 
@@ -144,13 +148,13 @@ class Authorization{
                 $this->generateTokens();
                 $this->refreshed = true;
             } else {
-                $this->errors[] = 'Refresh token wygasl, zaloguj sie ponownie!';
+                $this->errors[] = 'Token odświeżający wygasł, zaloguj się ponownie!';
             }
         }
     }
 
     /**
-     * Generate new tokens for the user and update the token-related properties.
+     * Generuje nowe tokeny dla użytkownika i aktualizuje właściwości związane z tokenem.
      */
     private function generateTokens(){
         $date = (new DateTime())->add(new DateInterval('PT15M'));
@@ -171,9 +175,9 @@ class Authorization{
     }
 
     /**
-     * Generate a random string.
+     * Generuje losowy ciąg znaków składający sie z dużych i małych liter o długości 30 znaków.
      *
-     * @return string  Returns a random string.
+     * @return string  Zwraca losowy ciąg znaków.
      */
     private function generateRandom(){
         $random = '';

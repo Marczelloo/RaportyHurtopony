@@ -1,12 +1,20 @@
+/**
+ * Skrypt odpowiedzialny za obsługę logowania i generowanie raportu.
+ */
+
+// Zmienna określająca stan zalogowania użytkownika
 var loggedIn = false;
 
+// Funkcja wywoływana po załadowaniu dokumentu
 $(document).ready(function() {
+    // Obsługa zdarzenia kliknięcia przycisku "Relogin"
     $('#relogin').click(function(event) {
         event.preventDefault();
         loggedIn = false;
         toggleVisibility();
     });
 
+    // Obsługa zdarzenia kliknięcia przycisku "Zaloguj"
     $('#loginBtn').click(function(event){
         event.preventDefault();
         var login = $('#login').val();
@@ -20,6 +28,7 @@ $(document).ready(function() {
             haslo: haslo
         };
 
+        // Wysłanie żądania AJAX do serwera w celu zalogowanie uzytkownika i zwrocenia tokenow
         $.ajax({
             url: 'index.php',
             method: 'POST',
@@ -43,8 +52,9 @@ $(document).ready(function() {
         });
     });
 
+    // Obsługa zdarzenia kliknięcia przycisku "Generuj raport"
     $('#btn').click(function(event) {
-        event.preventDefault(); // Prevent form submission
+        event.preventDefault(); // Zapobiega wysłaniu formularza
 
         var request = $('#request').val();
         var range = $('#range').val();
@@ -65,6 +75,7 @@ $(document).ready(function() {
             token: token
         };
 
+        // Wysłanie żądania AJAX do serwera w celu generowania raportu
         $.ajax({
             url: 'index.php',
             method: 'POST',
@@ -86,17 +97,17 @@ $(document).ready(function() {
         });
     });
 
-    // Function to toggle the visibility of login and raport containers
+    // Funkcja odpowiedzialna za przełączanie widoczności kontenerów logowania i raportu
     function toggleVisibility() {
         if (loggedIn) {
             $('#login-container').css('display', 'none');
             $('#raport-container').css('display', 'flex');
         } else {
             $('#login-container').css('display', 'flex');
-            $('#raport-container').css('display', 'None');
+            $('#raport-container').css('display', 'none');
         }
     }
 
-    // Initial visibility setup
+    // Inicjalna konfiguracja widoczności
     toggleVisibility();
 });

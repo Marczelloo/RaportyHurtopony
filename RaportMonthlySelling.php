@@ -1,23 +1,26 @@
 <?php
 
+/**
+ * Klasa RaportMonthlySelling generuje raport miesięcznej sprzedaży produktów.
+ * Dziedziczy po klasie Raport.
+ */
 class RaportMonthlySelling extends Raport{
 
-    //raport dla pojedynczej opony
-        //dla jednego indeksu przedzila w miesiacach (ten rok, poprzedni rok)+
-        //$range albo dateFrom and dateTo oraz indeks w setParameters +
-
-
-        //raportbestselling porownanie raportu z poprzednim miesiacem i porownanie procentowo sprzedazy
-        //dataConverter dopisanie dwoch funkcji okres poprzedni i z poprzedniego roku +
-        // dodanie mozliwosci podania zakresu date nie z range+
-
+    /**
+     * Konstruktor klasy RaportMonthlySelling, wywołuje konstruktor klasy nadrzędnej
+     */
     public function __construct(){
         parent::__construct();
     }
 
+    /**
+     * Metoda generate generuje raport miesięcznej sprzedaży produktów.
+     * @return array Tablica zawierająca wygenerowany raport.
+     */
     public function generate(){
         $raport = [];
 
+        // Sprawdzenie, czy raport ma być wygenerowany dla pojedynczej opony w określonym przedziale czasu
         if (in_array($this->range, ['yesterday', 'last7days', 'last14days'])) {
             $bestSelling = new RaportBestSelling();
             $params = ['indeks' => $this->indeks, 'range' => $this->range];
@@ -34,6 +37,7 @@ class RaportMonthlySelling extends Raport{
         $params = ['indeks' => $this->indeks, 'range' => $this->range];
         $bestSelling->setParameters($params);
 
+        // Generowanie raportu dla każdego miesiąca w określonym przedziale czasu
         while ($current_timestamp <= $end_timestamp) {
             $date = new DateTime($current_timestamp);
             $month = $date->format('m');

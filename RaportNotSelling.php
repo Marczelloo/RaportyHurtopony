@@ -1,23 +1,24 @@
 <?php
 
+/**
+ * Klasa RaportNotSelling generuje raport produktów, które nie zostały sprzedane w określonym przedziale czasu.
+ * Dziedziczy po klasie Raport.
+ */
 class RaportNotSelling extends Raport{
+    /**
+     * Konstruktor klasy RaportNotSelling,  wywołuje konstruktor klasy nadrzędnej
+     */
     public function __construct(){
         parent::__construct();
     }
 
+    /**
+     * Metoda generate generuje raport produktów, które nie zostały sprzedane w określonym przedziale czasu.
+     * @return array Tablica zawierająca wygenerowany raport.
+     */
     public function generate(){
         $raport = [];
 
-        // if($this->dateFrom != NULL && $this->dateTo != NULL){
-        //     $query = "SELECT INDEKS, NAZWA, STAN, CENA_HP0 FROM ltx_stan_opon_186 WHERE stan > 0 and ltx_stan_opon_186.INDEKS NOT IN (
-        //         SELECT DISTINCT INDEKS_TOW FROM ltx_obroty_232 WHERE DATA_FAKT < ? AND DATA_FAKT > ?);";
-        //     $prepare = $this->dbConnection->prepare($query);
-        //     $prepare->bind_param("ss", $this->dateFrom, $this->dateTo);
-        //     $prepare->execute();
-        //     $raport = $prepare->get_result();
-        //     $prepare->close();
-        // }
-        
         if($this->dateFrom != NULL && $this->dateTo != NULL){
             $query = "select * from ltx_stan_opon_186 where stan>0";
             $prepare = $this->dbConnection->query($query);
@@ -44,4 +45,5 @@ class RaportNotSelling extends Raport{
         return $raport;
     }
 }
+
 ?>
