@@ -89,17 +89,12 @@ class API{
         $response = [];
         if(empty($this->errors))
         {
-            $repsonse['succes'] = 1;
-            $repsonse['result'] = $this->result;
+            echo json_encode(['success'=> 1 , "result" => $this->result]);
         } 
         else 
         {
-            $repsonse['succes'] = 0;
-            $response['result'] = $this->errors;
+            echo json_encode(['success'=> 0 , "result" => $this->errors]);
         }
-
-        //Zwrócenie wyniku
-        echo json_encode($response);
     }
 
     //Funkcja oczyszczająca wszystkie dane

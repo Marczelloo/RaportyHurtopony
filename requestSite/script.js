@@ -36,8 +36,6 @@ $(document).ready(function() {
             success: function(response) {
                 var success = JSON.parse(response);
                 if(success.success == 1) {
-                    console.log(response);
-                    console.log(success);
                     loggedIn = true;
                     $('#output').html(response);
                     toggleVisibility();
