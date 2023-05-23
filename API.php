@@ -6,7 +6,8 @@ include("RaportBestSelling.php");
 include("RaportNotSelling.php");
 include("RaportMonthlySelling.php");
 include("Authorization.php");
-include('RaportBesSellingHO.php');
+include('RaportBestSellingHO.php');
+include('RaportNotSellingHO.php');
 
 /**
  * Klasa API
@@ -273,13 +274,19 @@ class API{
                         $this->monthlyselling();
                     break;
                     case 'bestsellingHO':
-                        $this->raportBestsellingHO();
+                        $this->bestsellingHO();
                     break;
                     case 'bestsellingHORangeBefore';
-                        $this->raportBestsellingHORangeBefore();
+                        $this->bestsellingHORangeBefore();
                     break;
                     case 'bestsellingHOYearAgo';
-                        $this->raportBestsellingHORangeYearAgo();
+                        $this->bestsellingHORangeYearAgo();
+                    break;
+                    case 'notsellingHO': 
+                        $this->notsellingHO();
+                    break;
+                    case 'monthlysellingHO': 
+                        $this->monthlysellingHO();
                     break;
                     default:
                     $this->errors[] = "Niepoprawne żądanie(request)!";
@@ -449,7 +456,7 @@ class API{
         $raport->dbClose();
     }
 
-    private function raportbestsellingHO(){
+    private function bestsellingHO(){
         $raport = new RaportBestSellingHO();
         if(isset($this->indeks))
         {
@@ -477,7 +484,7 @@ class API{
         $raport->dbClose();
     }
 
-    private function raportbestsellingHORangeBefore(){
+    private function bestsellingHORangeBefore(){
         $raport = new RaportBestSellingHO();
         if(isset($this->indeks))
         {
@@ -505,7 +512,7 @@ class API{
         $raport->dbClose();
     }
 
-    private function raportbestsellingHORangeYearAgo(){
+    private function bestsellingHORangeYearAgo(){
         $raport = new RaportBestSellingHO();
         if(isset($this->indeks))
         {
@@ -531,6 +538,38 @@ class API{
         }
         $this->result = $raport->newCompareRangeYearAgo();
         $raport->dbClose();
+    }
+
+    private function notsellingHO(){
+        $raport = new RaportNotSellingHO();
+        if(isset($this->indeks))
+        { 
+            if(isset($this->range))
+            {
+                $raport->setParameters(['range'=> $this->range, 'indeks'=> $this->indeks]);
+            } 
+            else 
+            {
+                $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo, 'indeks'=>$this->indeks]);
+            }
+        } 
+        else
+        { 
+            if(isset($this->range))
+            {
+                $raport->setParameters(['range'=> $this->range]);
+            } 
+            else 
+            {
+                $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo]);
+            }
+        }
+        $this->result = $raport->generate();
+        $raport->dbClose();
+    }
+
+    private function monthlysellingHO(){
+
     }
 
     /**
