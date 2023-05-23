@@ -1,19 +1,19 @@
 <?php
-ini_set('display_errors', 0);
+//ini_set('display_errors', 0);
 
 include('Raport.php');
 include("RaportBestSelling.php");
 include("RaportNotSelling.php");
 include("RaportMonthlySelling.php");
 include("Authorization.php");
-
+include('RaportBesSellingHO.php');
 
 /**
  * Klasa API
  * Interfejsc zwracający raporty na podstawie przekazanych danych
  */
 class API{
-    private $request; // 'bestselling' || 'bestsellingRangeAgo' || 'bestsellingYearAgo' || 'notselling' || 'monthlyselling' || 'raportbestsellingHO || 
+    private $request; // 'bestselling' || 'bestsellingRangeAgo' || 'bestsellingYearAgo' || 'notselling' || 'monthlyselling' || 'raportbestsellingHO || 'raportbestsellingHORangeBefore' || 'raportbestsellingHORangeYearAgo'
     private $range; // 'yesterday' || 'last7days' || 'last14days' || 'last30days' || 'last90days' || 'last180days' || 'lastmonth' || 'thismonth' || 'lastyear' || 'thisyear'
     private $valid_ranges = ['yesterday', 'last7days', 'last14days', 'last30days', 'last90days', 'last180days', 'lastmonth', 'thismonth', 'lastyear', 'thisyear'];
     private $dateFrom; //zakres dat od i do jest liczony w przeszlosc czyli od = 12.05.2023, do = 01.01.2023
@@ -86,7 +86,6 @@ class API{
         }
                 
         //Utworzenie wyniku w zależności czy są jakieś błędy czy nie
-        $response = [];
         if(empty($this->errors))
         {
             echo json_encode(['success'=> 1 , "result" => $this->result]);
@@ -215,22 +214,30 @@ class API{
             *gdyż albo sie loguje i podał login i hasło i nie ma jeszcze tokenu
             *albo nie ma go i nie zostanie przepuszczony dalej
             */
-            if($this->token != null)
-            {
-                $auth_token = new Authorization($this->token);
-                $valid = $auth_token->checkToken();
-                if(is_array($valid))
+            if(($this->token == "" || $this->token == " ") && $this->login == null && $this->haslo == null){
+                $this->errors[] = "Nie podano tokenu";
+            } else{
+                if($this->token != null && $this->token != "" && $this->token != "")
                 {
-                    if(array_key_exists('token', $valid) && array_key_exists('refreshToken', $valid))
+                    $auth_token = new Authorization($this->token);
+                    $valid = $auth_token->checkToken();
+                    if(is_array($valid))
                     {
-                        $this->result = $valid;
+                        if(array_key_exists('token', $valid) && array_key_exists('refreshToken', $valid))
+                        {
+                            $this->result = $valid;
+                        } 
+                        else
+                        {
+                            $this->errors = $valid;
+                        }
                     } 
-                    else
-                    {
-                        $this->errors = $valid;
-                    }
                 } 
             }
+                
+        
+            
+        
 
             //sprawdzenie czy użytkownik przeszedł walidacje tokenu 
             //lub czy podał login i hasło żęby sie załogować i wygenerować tokeny
@@ -265,8 +272,14 @@ class API{
                     case 'monthlyselling':
                         $this->monthlyselling();
                     break;
-                    case 'raportbestsellingHO':
+                    case 'bestsellingHO':
                         $this->raportBestsellingHO();
+                    break;
+                    case 'bestsellingHORangeBefore';
+                        $this->raportBestsellingHORangeBefore();
+                    break;
+                    case 'bestsellingHOYearAgo';
+                        $this->raportBestsellingHORangeYearAgo();
                     break;
                     default:
                     $this->errors[] = "Niepoprawne żądanie(request)!";
@@ -460,6 +473,64 @@ class API{
                 $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo]);
             }
         }
+        $this->result = $raport->generate();
+        $raport->dbClose();
+    }
+
+    private function raportbestsellingHORangeBefore(){
+        $raport = new RaportBestSellingHO();
+        if(isset($this->indeks))
+        {
+            if(isset($this->range))
+            {
+                $raport->setParameters(['range'=> $this->range, 'indeks'=>$this->indeks]);
+            }
+            else
+            {
+                $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo, 'indeks'=>$this->indeks]);
+            }
+        }
+        else
+        {
+            if(isset($this->range))
+            {
+                $raport->setParameters(['range'=> $this->range]);
+            } 
+            else 
+            {
+                $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo]);
+            }
+        }
+        $this->result = $raport->newCompareRange();
+        $raport->dbClose();
+    }
+
+    private function raportbestsellingHORangeYearAgo(){
+        $raport = new RaportBestSellingHO();
+        if(isset($this->indeks))
+        {
+            if(isset($this->range))
+            {
+                $raport->setParameters(['range'=> $this->range, 'indeks'=>$this->indeks]);
+            }
+            else
+            {
+                $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo, 'indeks'=>$this->indeks]);
+            }
+        }
+        else
+        {
+            if(isset($this->range))
+            {
+                $raport->setParameters(['range'=> $this->range]);
+            } 
+            else 
+            {
+                $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo]);
+            }
+        }
+        $this->result = $raport->newCompareRangeYearAgo();
+        $raport->dbClose();
     }
 
     /**

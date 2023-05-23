@@ -30,19 +30,23 @@ $(document).ready(function() {
 
         // Wysłanie żądania AJAX do serwera w celu zalogowanie uzytkownika i zwrocenia tokenow
         $.ajax({
-            url: './raports/index.php',
+            url: 'index.php',
             method: 'POST',
             data: loginData,
             success: function(response) {
-                var success = JSON.parse(response);
-                if(success.success == 1) {
-                    loggedIn = true;
-                    $('#output').html(response);
-                    toggleVisibility();
-                } else {
-                    console.log(response);
-                    $('#output').html(response);
-                }
+                // var success = JSON.parse(response);
+                // if(success.success == 1) {
+                //     loggedIn = true;
+                //     $('#output').html(response);
+                //     toggleVisibility();
+                // } else {
+                //     console.log(response);
+                //     $('#output').html(response);
+                // }
+                loggedIn = true;
+                toggleVisibility();
+                console.log(response);
+                $('#output').html(response);
             },
             error: function(xhr, status, error) {
                 console.log('AJAX request error:', error);
@@ -79,15 +83,17 @@ $(document).ready(function() {
             method: 'POST',
             data: data,
             success: function(response) {
-                var success = JSON.parse(response);
-                if(success.success == 1) {
-                    loggedIn = true;
-                    $('#output').html(response);
-                    toggleVisibility();
-                } else {
-                    console.log(output);
-                    $('#output').html(response);
-                }
+                // var success = JSON.parse(response);
+                // if(success.success == 1) {
+                //     loggedIn = true;
+                //     $('#output').html(response);
+                //     toggleVisibility();
+                // } else {
+                //     console.log(output);
+                //     $('#output').html(response);
+                // }
+                console.log(response);
+                $('#output').html(response);
             },
             error: function(xhr, status, error) {
                 console.log('AJAX request error:', error);
