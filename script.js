@@ -30,7 +30,7 @@ $(document).ready(function() {
 
         // Wysłanie żądania AJAX do serwera w celu zalogowanie uzytkownika i zwrocenia tokenow
         $.ajax({
-            url: 'index.php',
+            url: './raports/index.php',
             method: 'POST',
             data: loginData,
             success: function(response) {

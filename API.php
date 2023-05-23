@@ -13,7 +13,7 @@ include("Authorization.php");
  * Interfejsc zwracający raporty na podstawie przekazanych danych
  */
 class API{
-    private $request; // 'bestselling' || 'bestsellingRangeAgo' || 'bestsellingYearAgo' || 'notselling' || 'monthlyselling'
+    private $request; // 'bestselling' || 'bestsellingRangeAgo' || 'bestsellingYearAgo' || 'notselling' || 'monthlyselling' || 'raportbestsellingHO || 
     private $range; // 'yesterday' || 'last7days' || 'last14days' || 'last30days' || 'last90days' || 'last180days' || 'lastmonth' || 'thismonth' || 'lastyear' || 'thisyear'
     private $valid_ranges = ['yesterday', 'last7days', 'last14days', 'last30days', 'last90days', 'last180days', 'lastmonth', 'thismonth', 'lastyear', 'thisyear'];
     private $dateFrom; //zakres dat od i do jest liczony w przeszlosc czyli od = 12.05.2023, do = 01.01.2023
@@ -265,6 +265,9 @@ class API{
                     case 'monthlyselling':
                         $this->monthlyselling();
                     break;
+                    case 'raportbestsellingHO':
+                        $this->raportBestsellingHO();
+                    break;
                     default:
                     $this->errors[] = "Niepoprawne żądanie(request)!";
                 }
@@ -433,6 +436,32 @@ class API{
         $raport->dbClose();
     }
 
+    private function raportbestsellingHO(){
+        $raport = new RaportBestSellingHO();
+        if(isset($this->indeks))
+        {
+            if(isset($this->range))
+            {
+                $raport->setParameters(['range'=> $this->range, 'indeks'=>$this->indeks]);
+            }
+            else
+            {
+                $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo, 'indeks'=>$this->indeks]);
+            }
+        }
+        else
+        {
+            if(isset($this->range))
+            {
+                $raport->setParameters(['range'=> $this->range]);
+            } 
+            else 
+            {
+                $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo]);
+            }
+        }
+    }
+
     /**
     *Funckja czyszcząca dane z pustych miejsc przed i po zmienną, 
     *cudzysłowów, zamienjąca specjalne nzaki HTML 
@@ -453,5 +482,6 @@ class API{
         return $input;
     }
 }
+
 
 ?>
