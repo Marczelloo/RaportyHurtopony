@@ -8,6 +8,7 @@ include("RaportMonthlySelling.php");
 include("Authorization.php");
 include('RaportBestSellingHO.php');
 include('RaportNotSellingHO.php');
+include('RaportMonthlySellingHO.php');
 
 /**
  * Klasa API
@@ -569,7 +570,31 @@ class API{
     }
 
     private function monthlysellingHO(){
-
+        $raport = new RaportMonthlySellingHO();
+        if(isset($this->indeks))
+        { 
+            if(isset($this->range))
+            {
+                $raport->setParameters(['range'=> $this->range, 'indeks'=> $this->indeks]);
+            } 
+            else 
+            {
+                $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo, 'indeks'=>$this->indeks]);
+            }
+        } 
+        else
+        { 
+            if(isset($this->range))
+            {
+                $raport->setParameters(['range'=> $this->range]);
+            } 
+            else 
+            {
+                $raport->setParameters(['dateFrom'=> $this->dateFrom, 'dateTo'=> $this->dateTo]);
+            }
+        }
+        $this->result = $raport->generate();
+        $raport->dbClose();
     }
 
     /**
