@@ -25,7 +25,7 @@ class RaportBestSellingHO extends Raport{
         if($this->dateFrom != null && $this->dateTo != null){
 
             //stworzenie bazy zapytania
-            $query = "SELECT rp_obroty.symbol as INDEKS, CONCAT(producent, ' ', bazaopon.nazwa) AS NAZWA, MAGAZYN, CENA_KATALOGOWA, SUM(rp_obroty.ILOSC) AS SUMA_ILOSC, ROUND(SUM(rp_obroty.cena_brutto), 2) AS SUMA_WARTOSC, ROUND((SUM(cena_brutto) / SUM(rp_obroty.ILOSC)), 2) AS SREDNIA_CENA_SPRZEDAZY
+            $query = "SELECT rp_obroty.symbol as INDEKS, CONCAT(producent, ' ', bazaopon.nazwa) AS NAZWA, ILOSC_MAGAZYN, CENA_KATALOGOWA, SUM(rp_obroty.ILOSC) AS SUMA_ILOSC, ROUND(SUM(rp_obroty.cena_brutto), 2) AS SUMA_WARTOSC, ROUND((SUM(cena_brutto) / SUM(rp_obroty.ILOSC)), 2) AS SREDNIA_CENA_SPRZEDAZY
             FROM bazaopon
             INNER JOIN rp_obroty ON bazaopon.symbol = rp_obroty.symbol
             WHERE";
@@ -61,7 +61,7 @@ class RaportBestSellingHO extends Raport{
                 $raport[] = [
                     'indeks'=>$row['INDEKS'], 
                     'nazwa'=>$row['NAZWA'], 
-                    'stan'=>$row['MAGAZYN'], 
+                    'stan'=>$row['ILOSC_MAGAZYN'], 
                     'cena_hp0'=>$row['CENA_KATALOGOWA'], 
                     'suma_ilosc'=>$row['SUMA_ILOSC'], 
                     'suma_wartosc'=>$row['SUMA_WARTOSC'], 

@@ -21,7 +21,7 @@ class RaportNotSellingHO extends Raport{
         if($this->dateFrom != NULL && $this->dateTo != NULL){
             $query = "SELECT rp_obroty.symbol as INDEKS, CONCAT(producent, '', bazaopon.nazwa) as NAZWA, MAGAZYN, CENA_KATALOGOWA 
             from bazaopon inner join rp_obroty on rp_obroty.symbol = bazaopon.symbol
-            where MAGAZYN > 0 and DATA < ? and RodzajPozycji = 'P' GROUP BY rp_obroty.symbol";
+            where ILOSC_MAGAZYN > 0 and DATA < ? and RodzajPozycji = 'P' GROUP BY rp_obroty.symbol";
             $prepare = $this->dbConnection->prepare($query);
             $prepare->bind_param("s", $this->dateTo);
             $prepare->execute();
